@@ -82,14 +82,12 @@ const productSchema = new mongoose.Schema(
 
 );
 
-productSchema.pre("save", function (next) {
-    if ( this.discountPrice !== null && this.discountPrice >= this.price){
-        return next (
-            new Error("Discount price must be less than original price")         
-        );
+productSchema.pre("save", async function () {
+    if (this.discountPrice !== null && this.discountPrice >= this.price) {
+        throw new Error("Discount price must be less than original price");
     }
-    next();
 });
+
 
 
 const products = mongoose.model("Product", productSchema);
