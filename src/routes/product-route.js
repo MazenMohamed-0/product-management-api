@@ -1,5 +1,4 @@
 const express = require("express");
-
 const {
     createProduct,
     getAllProducts,
@@ -8,22 +7,31 @@ const {
     deleteProduct,
     getProductStats
 } = require("../controllers/product-controller");
-const { adminOnly } = require("../middlewares/auth");
-const { createProduct } = require("../services/product-service");
+const { authMiddleware, adminOnly } = require("../middlewares/auth");
+const { validateBody, validateQuery, validateParams } = require("../middlewares/validation");
+const {
+    createProductSchema,
+    updateProductSchema,
+    getAllProductsQuerySchema,
+    deleteProductSchema,
+    getProductByIdSchema
+} = require("../validations/product-schema");
 
-const router = express.Router()
+const router = express.Router();
 
-express.post("/", adminOnly, createProduct);
+router.use(authMiddleware);
 
-express.get("/stats", adminOnly, getProductStats);
+router.post("/", adminOnly, validateBody(createProductSchema), createProduct);
 
-express.get("/", getAllProducts);
+router.get("/stats", adminOnly, getProductStats);
 
-express.get(":id",getProduct);
+router.get("/", validateQuery(getAllProductsQuerySchema), getAllProducts);
 
-express.put(":id", adminOnly, updateProduct);
+router.get("/:id", validateParams(getProductByIdSchema), getProduct);
 
-express.delete(":id", adminOnly,deleteProduct);
+router.put("/:id", adminOnly, validateParams(getProductByIdSchema), validateBody(updateProductSchema), updateProduct);
+
+router.delete("/:id", adminOnly, validateParams(deleteProductSchema), deleteProduct);
 
 module.exports = router;
 

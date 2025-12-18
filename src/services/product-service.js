@@ -100,7 +100,7 @@ const createProduct = async (data) => {
 
 
 
-const productById = async (id, userRole) => {
+const getProduct = async (id, userRole) => {
     const product = await Product.findById(id);
 
     if(!product) {
@@ -226,7 +226,7 @@ const getProductStats = async () => {
 module.exports = {
     createProduct,
     getAllProducts,
-    productById,
+    getProduct,
     updateProduct,
     deleteProduct,
     getProductStats

@@ -1,28 +1,31 @@
-const productService = require("../services/product-service");
+const {
+    createProduct: createProductService,
+    getAllProducts: getAllProductsService,
+    getProduct: getProductService,
+    updateProduct: updateProductService,
+    deleteProduct: deleteProductService,
+    getProductStats: getProductStatsService
+} = require("../services/product-service");
 
-const createProduct = async (req, res) => {
+
+exports.createProduct = async (req, res, next) => {
     try {
-        const product = await createProduct(req.body);
+        const product = await createProductService(req.body);
 
         res.status(201).json({
-            success:true,
+            success: true,
             message: "Product created successfully",
             data: product
         });
-
     } catch (error) {
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };
 
-// 2. Get All Products
-exports.getAllProducts = async (req, res) => {
+
+exports.getAllProducts = async (req, res, next) => {
     try {
-        const { products, pagination } = await getAllProducts(req.query, req.user.role);
+        const { products, pagination } = await getAllProductsService(req.query, req.user.role);
 
         res.status(200).json({
             success: true,
@@ -31,18 +34,14 @@ exports.getAllProducts = async (req, res) => {
             pagination
         });
     } catch (error) {
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };
 
-// 3. Get Single Product
-exports.getProduct = async (req, res) => {
+
+exports.getProduct = async (req, res, next) => {
     try {
-        const product = await getProduct(req.params.id, req.user.role);
+        const product = await getProductService(req.params.id, req.user.role);
 
         res.status(200).json({
             success: true,
@@ -50,18 +49,14 @@ exports.getProduct = async (req, res) => {
             data: product
         });
     } catch (error) {
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };
 
-// 4. Update Product
-exports.updateProduct = async (req, res) => {
+
+exports.updateProduct = async (req, res, next) => {
     try {
-        const product = await updateProduct(req.params.id, req.body);
+        const product = await updateProductService(req.params.id, req.body);
 
         res.status(200).json({
             success: true,
@@ -69,18 +64,14 @@ exports.updateProduct = async (req, res) => {
             data: product
         });
     } catch (error) {
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };
 
-// 5. Delete Product
-exports.deleteProduct = async (req, res) => {
+
+exports.deleteProduct = async (req, res, next) => {
     try {
-        const deletedInfo = await deleteProduct(req.params.id);
+        const deletedInfo = await deleteProductService(req.params.id);
 
         res.status(200).json({
             success: true,
@@ -88,18 +79,14 @@ exports.deleteProduct = async (req, res) => {
             data: deletedInfo
         });
     } catch (error) {
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };
 
-// 6. Get Product Statistics
-exports.getProductStats = async (req, res) => {
+
+exports.getProductStats = async (req, res, next) => {
     try {
-        const stats = await getProductStats();
+        const stats = await getProductStatsService();
 
         res.status(200).json({
             success: true,
@@ -107,10 +94,6 @@ exports.getProductStats = async (req, res) => {
             data: stats
         });
     } catch (error) {
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };

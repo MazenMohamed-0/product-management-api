@@ -1,10 +1,9 @@
-const { disconnect } = require("mongoose");
-const {z} = require("zod");
+const { z } = require("zod");
 
 const baseProductSchema = {
     sku: z.string().min(1, "SKU is required").max(50, "SKU must be at most 50 characters").trim(),
     
-    name: z.string().min(1, "Name is required").max(200, "Name must be at most 200 characters").trim(),
+    name: z.string().min(1, "Name is required").min(3, "Name must be at least 3 characters").max(200, "Name must be at most 200 characters").trim(),
     
     description: z.string().max(1000, "Description must be at most 1000 characters").nullable().optional(),
     
@@ -12,6 +11,8 @@ const baseProductSchema = {
     .max(100, "Category must be at most 100 characters").trim(),
     
     type: z.enum(["public", "private"], {errorMap: () => ({message: "Type must be either 'public' or 'private'"})}),
+    
+    price: z.number().positive("Price must be greater than 0").multipleOf(0.01, "Price must have at most 2 decimal places"),
     
     discountPrice: z.number().positive("Discount price must be greater than 0").multipleOf(0.01, "Discount price must have at most 2 decimal places")
     .nullable().optional(),
@@ -51,7 +52,7 @@ const createProductSchema = z
         discountPrice: baseProductSchema.discountPrice.optional(),
         quantity: baseProductSchema.quantity.optional()
     }).strict().refine(
-        (data) => !data.discountPrice || !data.price || !data.discountPrice < data.price,
+        (data) => !data.discountPrice || !data.price || data.discountPrice < data.price,
         {
             message: "Discount price must be less than original price",
             path: ["discountPrice"]
